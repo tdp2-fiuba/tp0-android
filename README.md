@@ -1,2 +1,17 @@
-# tp0-android
-Cliente en Android para el trabajo practico nro. 0 de la materia Taller de desarrollo de proyectos II.
+## Install the Ionic CLI
+```sh
+$ npm install -g ionic
+```
+
+## Run the lab App
+```sh
+$ ionic serve -l
+``` 
+
+## Run App on android dev
+```sh
+$ ionic cordova run android
+``` 
+
+
+

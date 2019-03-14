@@ -1,5 +1,7 @@
 {
   "name": "tdp2-tp0-app",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
