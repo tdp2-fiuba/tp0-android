@@ -8,7 +8,7 @@ $ npm install -g ionic
 $ ionic serve -l
 ``` 
 
-## Run App on android dev
+## Run App on android
 ```sh
 $ ionic cordova run android
 ``` 
