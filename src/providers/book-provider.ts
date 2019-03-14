@@ -1,24 +1,24 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { BaseProvider } from './base-provider';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {environment} from '../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class BookProvider {
-    public basePath: string;
+    public apiPath: string;
 
     constructor(public http: HttpClient) {
-    this.basePath = BaseProvider.getApiPath() + '/books';
-  }
+        this.apiPath = environment.apiPath + '/books';
+    }
 
-  public getBooks(searchQuery) {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json'
-      })
-    };
-    return this.http.get(this.basePath + '/' + searchQuery, httpOptions);
-  }
+    public getBooks(searchQuery) {
+        const httpOptions = {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json'
+            })
+        };
+        return this.http.get(this.apiPath + '?key_words=' + searchQuery, httpOptions);
+    }
 
 }

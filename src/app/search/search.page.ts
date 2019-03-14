@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {BookProvider} from '../../providers/book-provider';
+import {BookProvider} from './../../providers/book-provider';
 import {Router} from '@angular/router';
 
 @Component({
@@ -10,7 +10,7 @@ import {Router} from '@angular/router';
 export class SearchPage implements OnInit {
     public searchQuery: string;
 
-    constructor(public router: Router) {
+    constructor(public router: Router, public bookProvider: BookProvider) {
         this.searchQuery = '';
     }
 
@@ -19,14 +19,11 @@ export class SearchPage implements OnInit {
 
     doSearch(event) {
         console.log('search by searchQuery: ', this.searchQuery);
-        this.router.navigateByUrl('list').then((value) => {
-            console.log('redirec list response: ', value);
-        });
-        /*this.bookProvider.getBooks(this.searchQuery).subscribe((data) => {
+        this.router.navigateByUrl('list');
+        this.bookProvider.getBooks(this.searchQuery).subscribe((data) => {
+            console.log('books response: ', data);
         }, (error) => {
             console.log(error);
         });
-        */
-
     }
 }
