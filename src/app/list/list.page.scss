@@ -1,0 +1,35 @@
+.books-list{
+  height: 100%;
+  .book-item{
+    min-height: 50%;
+    font-size: 12px;
+    margin:0px;
+    p{
+      margin-left: 5px;
+      margin-bottom: 10px;
+      margin-top: 0px;
+    }
+    ion-grid {
+      height: 100%;
+      ion-row.first-row {
+        height: 60%;
+      }
+      ion-row.second-row {
+        height: 40%;
+      }
+      ion-col{
+        height: 100%;
+        overflow: hidden;
+      }
+      ion-button{
+        float: right;
+      }
+    }
+    .expand-description{
+      font-weight: bolder;
+      cursor: pointer;
+    }
+
+  }
+
+}

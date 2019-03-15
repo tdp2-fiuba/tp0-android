@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {BookProvider} from './../../providers/book-provider';
 import {Router} from '@angular/router';
+import { Storage } from '@ionic/storage';
 
 @Component({
     selector: 'app-search',
@@ -10,18 +11,20 @@ import {Router} from '@angular/router';
 export class SearchPage implements OnInit {
     public searchQuery: string;
 
-    constructor(public router: Router, public bookProvider: BookProvider) {
-        this.searchQuery = '';
+    constructor(private storage: Storage, public router: Router, public bookProvider: BookProvider) {
+
     }
 
     ngOnInit() {
+        this.searchQuery = '';
     }
 
-    doSearch(event) {
-        console.log('search by searchQuery: ', this.searchQuery);
-        this.router.navigateByUrl('list');
+    doSearch() {
+        console.log('this.searchQuery: ', this.searchQuery);
         this.bookProvider.getBooks(this.searchQuery).subscribe((data) => {
-            console.log('books response: ', data);
+            this.storage.set('searchQuery', this.searchQuery);
+            this.storage.set('books', data['items']);
+            this.router.navigateByUrl('list');
         }, (error) => {
             console.log(error);
         });
