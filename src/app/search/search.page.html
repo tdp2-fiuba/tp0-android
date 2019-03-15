@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="medium">
     <ion-title>Búsqueda</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -24,7 +24,10 @@
     <ion-row>
       <ion-col>
         <div>
-          <ion-searchbar placeholder="Buscar..."  [(ngModel)]="searchQuery" (change)="doSearch()" autocorrect="off"></ion-searchbar>
+          <ion-input class="input-search" placeholder="Buscar..."
+                     [(ngModel)]="searchQuery"
+                     (change)="doSearch(searchQuery)"
+                     debounce="500"></ion-input>
         </div>
       </ion-col>
     </ion-row>

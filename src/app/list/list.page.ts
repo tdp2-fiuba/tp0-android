@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Storage} from '@ionic/storage';
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'app-list',
@@ -10,7 +11,7 @@ export class ListPage implements OnInit {
     public searchQuery: object;
     public books: object;
 
-    constructor(private storage: Storage) {
+    constructor(private storage: Storage, public router: Router) {
     }
 
     ngOnInit() {
@@ -27,6 +28,11 @@ export class ListPage implements OnInit {
             .catch(error => {
                 console.log(error);
             });
+    }
+
+    backToSearch(){
+        this.router.navigateByUrl('search');
+
     }
 
     downloadBook(book){
