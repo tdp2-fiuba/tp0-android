@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {BookProvider} from './../../providers/book-provider';
 import {Router} from '@angular/router';
 import {Storage} from '@ionic/storage';
-import {Platform} from '@ionic/angular';
+import {LoadingController, Platform} from '@ionic/angular';
 import {ToastController} from '@ionic/angular';
 
 @Component({
@@ -16,9 +16,9 @@ export class SearchPage implements OnInit {
 
     constructor(private platform: Platform, private storage: Storage,
                 public router: Router, public bookProvider: BookProvider,
-                private toastController: ToastController) {
+                private toastController: ToastController,
+                private loadingController: LoadingController) {
         this.searchQuery = '';
-
     }
 
     ngOnInit() {
@@ -34,39 +34,66 @@ export class SearchPage implements OnInit {
         this.subscription.unsubscribe();
     }
 
-    doSearch(aca) {
-        console.log('search query begin: ', this.searchQuery);
-        console.log('search query aca: ',aca);
+    ionViewWillEnter() {
+        this.searchQuery = '';
+    }
 
-        this.searchQuery = this.getCleanedString(this.searchQuery);
-        console.log('search query: ', this.searchQuery);
-        this.bookProvider.getBooks(this.searchQuery).subscribe((data) => {
-            console.log(data['items'].length);
-            if (data['items'].length === 0) {
-                this.toastController.create({
-                    message: 'No hay libros que coincidan con la busqueda realizada. Intentelo nuevamente con ' +
-                        'alguna palabra clave diferente.',
-                    duration: 5000,
-                    color: 'tertiary'
-                }).then((message) => {
-                    message.present();
-                });
-            } else {
-                this.storage.set('searchQuery', this.searchQuery);
-                this.storage.set('books', data['items']);
-                this.router.navigateByUrl('list');
-            }
-
-        }, (error) => {
-            console.log(error);
+    doSearch(event) {
+        this.searchQuery = this.getCleanedString(event.target.value);
+        if (this.searchQuery === undefined || this.searchQuery === '') {
             this.toastController.create({
-                message: 'No se ha podido establecer conexion con el servidor.',
+                message: 'Ingrese una palabra clave de busqueda',
                 duration: 5000,
                 color: 'danger'
             }).then((message) => {
                 message.present();
             });
+            return;
+        }
+        this.loadingController.create({
+            message: 'Cargando...',
+            spinner: 'crescent'
+        }).then((loadingElement) => {
+            loadingElement.present();
+            let offset = 0;
+            let limit = 10;
+            this.bookProvider.getBooks(this.searchQuery, offset, limit).subscribe((data) => {
+                if (data['items'].length === 0) {
+                    this.toastController.create({
+                        message: 'No hay libros que coincidan con la busqueda realizada. Intentelo nuevamente con ' +
+                            'alguna palabra clave diferente.',
+                        duration: 5000,
+                        color: 'tertiary'
+                    }).then((message) => {
+                        loadingElement.dismiss();
+                        message.present();
+                    });
+                } else {
+                    Promise.all([
+                        this.storage.set('searchQuery', this.searchQuery),
+                        this.storage.set('books', data['items']),
+                        this.storage.set('offset', offset),
+                        this.storage.set('limit', limit)
+                    ])
+                        .then(() => {
+                            loadingElement.dismiss();
+                            this.router.navigateByUrl('list');
+                        });
+                }
+
+            }, (error) => {
+                console.log(error);
+                this.toastController.create({
+                    message: 'No se ha podido establecer conexion con el servidor.',
+                    duration: 5000,
+                    color: 'danger'
+                }).then((message) => {
+                    loadingElement.dismiss();
+                    message.present();
+                });
+            });
         });
+
     }
 
     getCleanedString(text) {

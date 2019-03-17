@@ -24,10 +24,9 @@
     <ion-row>
       <ion-col>
         <div>
-          <ion-input class="input-search" placeholder="Buscar..."
-                     [(ngModel)]="searchQuery"
-                     (change)="doSearch(searchQuery)"
-                     debounce="500"></ion-input>
+          <ion-searchbar class="input-search" placeholder="Buscar..."
+                     (change)="doSearch($event)"
+                         debounce="500"></ion-searchbar>
         </div>
       </ion-col>
     </ion-row>

@@ -12,13 +12,20 @@ export class BookProvider {
         this.apiPath = environment.apiPath + '/books';
     }
 
-    public getBooks(searchQuery) {
+    public getBooks(searchQuery, offset?, limit?) {
         const httpOptions = {
             headers: new HttpHeaders({
                 'Content-Type': 'application/json'
             })
         };
-        return this.http.get(this.apiPath + '?key_words=' + searchQuery, httpOptions);
+        let path = this.apiPath + '?key_words=' + searchQuery;
+        if (offset) {
+            path += '&start_index=' + offset;
+        }
+        if (limit) {
+            path += '&max_results=' + limit;
+        }
+        return this.http.get(path, httpOptions);
     }
 
 }
