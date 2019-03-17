@@ -9,7 +9,9 @@
     </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content padding
+             [scrollEvents]="true"
+             (ionScroll)="scrollEvent()">
     <ion-list class="books-list">
         <div *ngFor="let book of books" class="book-item">
             <ion-grid>
@@ -20,13 +22,13 @@
                     </ion-col>
                     <ion-col size="8">
                         <div>
-                            <p>{{ book.volumeInfo.title }}</p>
+                            <strong><p>{{ book.volumeInfo.title }}</p></strong>
                         </div>
                         <div>
                             <p *ngIf="book.volumeInfo.authors">{{book.volumeInfo.authors.join(', ')}}</p>
                         </div>
-                        <div>
-                            <p *ngIf="book.volumeInfo.categories">{{book.volumeInfo.categories.join(', ')}}</p>
+                        <div *ngIf="book.customCategories">
+                            <div *ngFor="let customCategory of book.customCategories" class="book-category {{customCategory}}"></div>
                         </div>
                         <div (click)="downloadBook(book)">
                             <ion-button size="small" color="success">
@@ -71,4 +73,9 @@
                 loadingText="Cargando...">
         </ion-infinite-scroll-content>
     </ion-infinite-scroll>
+    <div [hidden]="!scrolled" class="float-button" shape="round" (click)="goToTop()">
+        <ion-button size="default" color="secondary">
+            <ion-icon name="arrow-up"></ion-icon>
+        </ion-button>
+    </div>
 </ion-content>

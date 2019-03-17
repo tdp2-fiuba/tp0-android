@@ -35,14 +35,24 @@ export class SearchPage implements OnInit {
     }
 
     ionViewWillEnter() {
-        this.searchQuery = '';
+        Promise.all([
+            this.storage.get('searchQuery')
+        ])
+            .then(([searchQuery]) => {
+                this.searchQuery = searchQuery;
+                console.log('saved search query:', this.searchQuery);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+
     }
 
-    doSearch(event) {
-        this.searchQuery = this.getCleanedString(event.target.value);
+    doSearch() {
+        this.searchQuery = this.getCleanedString(this.searchQuery);
         if (this.searchQuery === undefined || this.searchQuery === '') {
             this.toastController.create({
-                message: 'Ingrese una palabra clave de busqueda',
+                message: 'Ingrese una palabra clave de búsqueda',
                 duration: 5000,
                 color: 'danger'
             }).then((message) => {
@@ -60,7 +70,7 @@ export class SearchPage implements OnInit {
             this.bookProvider.getBooks(this.searchQuery, offset, limit).subscribe((data) => {
                 if (data['items'].length === 0) {
                     this.toastController.create({
-                        message: 'No hay libros que coincidan con la busqueda realizada. Intentelo nuevamente con ' +
+                        message: 'No hay libros que coincidan con la búsqueda realizada. Intentelo nuevamente con ' +
                             'alguna palabra clave diferente.',
                         duration: 5000,
                         color: 'tertiary'
@@ -84,7 +94,7 @@ export class SearchPage implements OnInit {
             }, (error) => {
                 console.log(error);
                 this.toastController.create({
-                    message: 'No se ha podido establecer conexion con el servidor.',
+                    message: 'No se ha podido establecer conexión con el servidor.',
                     duration: 5000,
                     color: 'danger'
                 }).then((message) => {
@@ -109,4 +119,5 @@ export class SearchPage implements OnInit {
         text = text.replace(/ñ/gi, 'n');
         return text;
     }
+
 }

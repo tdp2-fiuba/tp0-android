@@ -14,6 +14,22 @@
       font-weight: bolder;
       cursor: pointer;
     }
+    .book-category{
+      width: 30px;
+      height: 36px;
+      background-image: url("../../assets/img/sprite-categories.jpg");
+      background-size: 170px;
+    }
+    .book-category.biography{background-position: 35px -70px;}
+    .book-category.fantasy{background-position: -89px -33px;}
+    .book-category.history{background-position: -68px -144px;}
+    .book-category.other{background-position: -50px -70px;}
   }
 
+}
+.float-button{
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  margin: 20px;
 }

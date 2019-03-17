@@ -18,7 +18,7 @@ export class BookProvider {
                 'Content-Type': 'application/json'
             })
         };
-        let path = this.apiPath + '?key_words=' + searchQuery;
+        let path = this.apiPath + '?key_words=' + searchQuery + '&sorted=true';
         if (offset) {
             path += '&start_index=' + offset;
         }

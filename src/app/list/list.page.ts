@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Storage} from '@ionic/storage';
 import {Router} from '@angular/router';
-import {IonInfiniteScroll, ToastController} from '@ionic/angular';
+import {IonContent, IonInfiniteScroll, ToastController} from '@ionic/angular';
 import {BookProvider} from '../../providers/book-provider';
 
 @Component({
@@ -14,8 +14,11 @@ export class ListPage implements OnInit {
     public books: any;
     private offset: string;
     private limit: string;
+    private scrolled: Boolean;
+    private categoriesClasses: Object;
 
     @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
+    @ViewChild(IonContent) content: IonContent;
 
     constructor(private storage: Storage, public router: Router,
                 public bookProvider: BookProvider,
@@ -23,6 +26,10 @@ export class ListPage implements OnInit {
     }
 
     ngOnInit() {
+        this.categoriesClasses = {
+            'History': 'history',
+            'Biography & Autobiography': 'biography',
+        };
     }
 
     ionViewWillEnter() {
@@ -34,9 +41,11 @@ export class ListPage implements OnInit {
         ])
             .then(([searchQuery, books, offset, limit]) => {
                 this.searchQuery = searchQuery;
-                this.books = books;
+                this.books = this.parseCategories(books);
                 this.offset = offset;
                 this.limit = limit;
+                this.scrolled = false;
+                console.log('books: ', this.books);
             })
             .catch(error => {
                 console.log(error);
@@ -50,6 +59,7 @@ export class ListPage implements OnInit {
     downloadBook(book) {
 
     }
+
 
     expandDescription(book) {
         book.showCompleteDescription = true;
@@ -65,12 +75,13 @@ export class ListPage implements OnInit {
             if (data['items'].length === 0) {
                 event.target.disabled = true;
             }
-            this.books = this.books.concat(data['items']);
+            let newBooks = this.parseCategories(data['items']);
+            this.books = this.books.concat(newBooks);
             event.target.complete();
         }, (error) => {
             console.log(error);
             this.toastController.create({
-                message: 'No se ha podido establecer conexion con el servidor.',
+                message: 'No se ha podido establecer conexión con el servidor.',
                 duration: 5000,
                 color: 'danger'
             }).then((message) => {
@@ -78,5 +89,42 @@ export class ListPage implements OnInit {
                 message.present();
             });
         });
+    }
+
+    scrollEvent() {
+        this.content.getScrollElement().then((scrollElement) => {
+            if (scrollElement.scrollTop > 0) {
+                this.scrolled = true;
+            } else {
+                this.scrolled = false;
+            }
+        });
+    }
+
+    goToTop() {
+        this.content.scrollToTop(500);
+    }
+
+
+    parseCategories(books) {
+        let that = this;
+        books.forEach(function (book) {
+            if (book.volumeInfo.categories) {
+                let arrayCategories = book.volumeInfo.categories;
+                let classesCategories = [];
+                arrayCategories.forEach(function (entry) {
+                    let classEntry = 'other';
+                    if (that.categoriesClasses.hasOwnProperty(entry)) {
+                        classEntry = that.categoriesClasses[entry];
+                    }
+                    if (classesCategories.indexOf(classEntry) === -1) {
+                        classesCategories.push(classEntry);
+                    }
+                });
+                book.customCategories = classesCategories;
+            }
+
+        });
+        return books;
     }
 }
