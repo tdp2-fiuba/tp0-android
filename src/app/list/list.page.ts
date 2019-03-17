@@ -3,6 +3,9 @@ import {Storage} from '@ionic/storage';
 import {Router} from '@angular/router';
 import {IonContent, IonInfiniteScroll, ToastController} from '@ionic/angular';
 import {BookProvider} from '../../providers/book-provider';
+import {File} from '@ionic-native/file';
+import {FileTransfer, FileTransferObject} from '@ionic-native/file-transfer/ngx';
+import {FileOpener} from '@ionic-native/file-opener/ngx';
 
 @Component({
     selector: 'app-list',
@@ -12,17 +15,19 @@ import {BookProvider} from '../../providers/book-provider';
 export class ListPage implements OnInit {
     public searchQuery: string;
     public books: any;
-    private offset: string;
-    private limit: string;
-    private scrolled: Boolean;
-    private categoriesClasses: Object;
+    public offset: string;
+    public limit: string;
+    public scrolled: Boolean;
+    public categoriesClasses: Object;
 
     @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
     @ViewChild(IonContent) content: IonContent;
 
     constructor(private storage: Storage, public router: Router,
                 public bookProvider: BookProvider,
-                private toastController: ToastController) {
+                private toastController: ToastController,
+                private transfer: FileTransfer,
+                private fileOpener: FileOpener) {
     }
 
     ngOnInit() {
@@ -57,6 +62,54 @@ export class ListPage implements OnInit {
     }
 
     downloadBook(book) {
+        const fileTransfer: FileTransferObject = this.transfer.create();
+        if (book.accessInfo.pdf && book.accessInfo.pdf.downloadLink) {
+            const downloadLink2 = book.accessInfo.pdf.downloadLink;
+            const downloadLink = 'http://www.pdf995.com/samples/pdf.pdf';
+            console.log('file transfer: ', downloadLink2);
+            this.toastController.create({
+                message: 'Descargando...',
+                color: 'success'
+            }).then((messageLoading) => {
+                messageLoading.present();
+                fileTransfer.download(downloadLink, File.dataDirectory + 'book.pdf').then((entry) => {
+                    messageLoading.dismiss();
+                    console.log('download complete: ' + entry.toURL());
+                    this.fileOpener.open(entry.toURL(), 'application/pdf')
+                        .then(() => console.log('File is opened'))
+                        .catch(e => {
+                            console.log(e);
+                            this.toastController.create({
+                                message: 'No se puede descargar el libro',
+                                duration: 5000,
+                                color: 'danger'
+                            }).then((message) => {
+                                message.present();
+                            });
+                        });
+                }, (error) => {
+                    messageLoading.dismiss();
+                    console.log(error);
+                    this.toastController.create({
+                        message: 'No se puede descargar el libro',
+                        duration: 5000,
+                        color: 'danger'
+                    }).then((message) => {
+                        message.present();
+                    });
+                });
+            });
+
+        } else {
+            this.toastController.create({
+                message: 'No se puede descargar el libro',
+                duration: 5000,
+                color: 'danger'
+            }).then((message) => {
+                message.present();
+            });
+        }
+
 
     }
 

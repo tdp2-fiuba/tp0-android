@@ -39,8 +39,12 @@ export class SearchPage implements OnInit {
             this.storage.get('searchQuery')
         ])
             .then(([searchQuery]) => {
-                this.searchQuery = searchQuery;
-                console.log('saved search query:', this.searchQuery);
+                console.log('storage search query: ', searchQuery);
+                if (searchQuery) {
+                    this.searchQuery = searchQuery;
+                } else {
+                    this.searchQuery = '';
+                }
             })
             .catch(error => {
                 console.log(error);

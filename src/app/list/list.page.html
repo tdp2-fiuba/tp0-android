@@ -30,7 +30,7 @@
                         <div *ngIf="book.customCategories">
                             <div *ngFor="let customCategory of book.customCategories" class="book-category {{customCategory}}"></div>
                         </div>
-                        <div (click)="downloadBook(book)">
+                        <div  *ngIf="book.accessInfo.pdf.isAvailable && book.accessInfo.pdf.downloadLink" (click)="downloadBook(book)">
                             <ion-button size="small" color="success">
                                 <ion-icon name="download"></ion-icon>
                             </ion-button>
